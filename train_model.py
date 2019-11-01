@@ -33,7 +33,7 @@ test_loader = DataLoader(dataset=test_dataset, batch_size=BATCH_SIZE, shuffle=Fa
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(device)
 
-n_epochs = 1
+n_epochs = 10
 
 model = MyUNet(8).to(device)
 optimizer = optim.Adam(model.parameters(), lr=0.001)
@@ -91,5 +91,5 @@ if __name__ == "__main__":
         train_model(epoch, history)
         evaluate_model(epoch, history)
 
-    torch.save(model.state_dict(), './model.pth')
+    torch.save(model.state_dict(), './ckpt/model.pth')
     history['train_loss'].iloc[100:].plot()
