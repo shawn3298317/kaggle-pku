@@ -35,7 +35,7 @@ class CarDataset(Dataset):
         img = np.rollaxis(img, 2, 0)
         
         # Get mask and regression maps
-        print("img_name: {}, labels = {}".format(img_name, labels))
+        #print("img_name: {}, labels = {}".format(img_name, labels))
         mask, regr = get_mask_and_regr(img0, labels, flip=False)
         regr = np.rollaxis(regr, 2, 0)
         
