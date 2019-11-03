@@ -33,7 +33,7 @@ test_loader = DataLoader(dataset=test_dataset, batch_size=BATCH_SIZE, shuffle=Fa
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(device)
 
-n_epochs = 10
+n_epochs = 15
 
 model = MyUNet(8).to(device)
 optimizer = optim.Adam(model.parameters(), lr=0.001)
