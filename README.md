@@ -8,7 +8,7 @@ To run the code -
 Code explained -
 1. This code uses [CenterNet](https://arxiv.org/pdf/1904.07850.pdf) to draw 3D bounding boxes for objects -
 
-![task]('/images/task.jpeg')
+![task](images/task.JPG)
 
 The quantities to be estimated are the -
 
