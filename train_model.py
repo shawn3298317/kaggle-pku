@@ -20,11 +20,15 @@ df_train, df_dev = train_test_split(train, test_size=0.01, random_state=42)
 df_test = test
 
 # Create dataset objects
+# Sets up a way for model to load the data
 train_dataset = CarDataset(df_train, train_images_dir, training=True)
 dev_dataset = CarDataset(df_dev, train_images_dir, training=False)
 test_dataset = CarDataset(df_test, test_images_dir, training=False)
 
+# batch size is limited by GPU memory
 BATCH_SIZE = 4
+# loads data
+# num_workers specifies the number of CPU cores that load data
 train_loader = DataLoader(dataset=train_dataset, batch_size=BATCH_SIZE, shuffle=True, num_workers=4)
 dev_loader = DataLoader(dataset=dev_dataset, batch_size=BATCH_SIZE, shuffle=False, num_workers=4)
 test_loader = DataLoader(dataset=test_dataset, batch_size=BATCH_SIZE, shuffle=False, num_workers=4)
@@ -37,6 +41,7 @@ n_epochs = 15
 
 model = MyUNet(8).to(device)
 optimizer = optim.Adam(model.parameters(), lr=0.001)
+# to degrade the learning rate as time progresses
 exp_lr_scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=max(n_epochs, 10) * len(train_loader) // 3, gamma=0.1)
 
 def train_model(epoch, history=None):
@@ -52,10 +57,11 @@ def train_model(epoch, history=None):
         loss = criterion(output, mask_batch, regr_batch)
         if history is not None:
             history.loc[epoch + batch_idx / len(train_loader), 'train_loss'] = loss.data.cpu().numpy()
-        
+        # baackward prop the loss to calculate gradient
         loss.backward()
-        
+        # Update weights
         optimizer.step()
+        # update learning rate ( decrease it )
         exp_lr_scheduler.step()
     
     print('Train Epoch: {} \tLR: {:.6f}\tLoss: {:.6f}'.format(epoch, optimizer.state_dict()['param_groups'][0]['lr'], loss.data))
@@ -63,7 +69,7 @@ def train_model(epoch, history=None):
 def evaluate_model(epoch, history=None):
     model.eval()
     loss = 0
-    
+    # use no grad to tell model not to perform back prop calc optimizations in forward pass to save time
     with torch.no_grad():
         for img_batch, mask_batch, regr_batch in dev_loader:
             img_batch = img_batch.to(device)
