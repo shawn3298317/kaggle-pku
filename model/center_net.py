@@ -12,6 +12,17 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 #device = torch.device("cuda:2")
 
 def get_mesh(batch_size, shape_x, shape_y):
+    '''
+    Params :
+        batch_size : Integer
+            Represents batch size of the data
+        shape_x : ?
+            Shape of x
+        shape_y : ?
+            Shape of y
+    Returns :
+        
+    '''
     mg_x, mg_y = np.meshgrid(np.linspace(0, 1, shape_y), np.linspace(0, 1, shape_x))
     mg_x = np.tile(mg_x[None, None, :, :], [batch_size, 1, 1, 1]).astype('float32')
     mg_y = np.tile(mg_y[None, None, :, :], [batch_size, 1, 1, 1]).astype('float32')
@@ -36,7 +47,8 @@ class double_conv(nn.Module):
         return x
 
 class up(nn.Module):
-    def __init__(self, in_ch, out_ch, bilinear=True):
+    def __init__(self, in_ch, out_ch, bilinear=False):
+        # if bilinear is false then the machine learns the conv transpose
         super(up, self).__init__()
 
         #  would be a nice idea if the upsampling could be learned too,
@@ -44,8 +56,10 @@ class up(nn.Module):
         if bilinear:
             self.up = nn.Upsample(scale_factor=2, mode='bilinear', align_corners=True)
         else:
+            # why is the number of input chanels in//2 instead of using the full input?
             self.up = nn.ConvTranspose2d(in_ch//2, in_ch//2, 2, stride=2)
 
+        # Why is a conv layer being added here ?
         self.conv = double_conv(in_ch, out_ch)
 
     def forward(self, x1, x2=None):
@@ -75,15 +89,26 @@ class MyUNet(nn.Module):
         super(MyUNet, self).__init__()
         self.base_model = EfficientNet.from_pretrained('efficientnet-b0')
         
+        # double conv uses a 3x3 kernel with padding =1, stride =1 
+
+        # intutively the number of classes should be 2 -> object or not
+        print('The number of classes is', n_classes)
+
         self.conv0 = double_conv(5, 64)
         self.conv1 = double_conv(64, 128)
         self.conv2 = double_conv(128, 512)
         self.conv3 = double_conv(512, 1024)
         
+        # kernel size = stride = 2
         self.mp = nn.MaxPool2d(2)
         
+        # why is the input chanels 1282 + 1024 ?
         self.up1 = up(1282 + 1024, 512)
+
+        # I dont know what this layer is - upsampling + conv ?
         self.up2 = up(512 + 512, 256)
+
+        # Why no softmax ? and how do they infer the class from this ?
         self.outc = nn.Conv2d(256, n_classes, 1)
 
     def forward(self, x):
