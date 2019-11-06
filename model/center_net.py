@@ -50,18 +50,18 @@ class up(nn.Module):
 
     def forward(self, x1, x2=None):
         x1 = self.up(x1)
-        
+
         # input is CHW
         diffY = x2.size()[2] - x1.size()[2]
         diffX = x2.size()[3] - x1.size()[3]
 
         x1 = F.pad(x1, (diffX // 2, diffX - diffX//2,
                         diffY // 2, diffY - diffY//2))
-        
-        # for padding issues, see 
+
+        # for padding issues, see
         # https://github.com/HaiyongJiang/U-Net-Pytorch-Unstructured-Buggy/commit/0e854509c2cea854e247a9c615f175f76fbb2e3a
         # https://github.com/xiaopeng-liao/Pytorch-UNet/commit/8ebac70e633bac59fc22bb5195e513d5832fb3bd
-        
+
         if x2 is not None:
             x = torch.cat([x2, x1], dim=1)
         else:
@@ -74,14 +74,14 @@ class MyUNet(nn.Module):
     def __init__(self, n_classes):
         super(MyUNet, self).__init__()
         self.base_model = EfficientNet.from_pretrained('efficientnet-b0')
-        
+
         self.conv0 = double_conv(5, 64)
         self.conv1 = double_conv(64, 128)
         self.conv2 = double_conv(128, 512)
         self.conv3 = double_conv(512, 1024)
-        
+
         self.mp = nn.MaxPool2d(2)
-        
+
         self.up1 = up(1282 + 1024, 512)
         self.up2 = up(512 + 512, 256)
         self.outc = nn.Conv2d(256, n_classes, 1)
@@ -94,16 +94,16 @@ class MyUNet(nn.Module):
         x2 = self.mp(self.conv1(x1))
         x3 = self.mp(self.conv2(x2))
         x4 = self.mp(self.conv3(x3))
-        
+
         x_center = x[:, :, :, IMG_WIDTH // 8: -IMG_WIDTH // 8]
         feats = self.base_model.extract_features(x_center)
         bg = torch.zeros([feats.shape[0], feats.shape[1], feats.shape[2], feats.shape[3] // 8]).to(device)
         feats = torch.cat([bg, feats, bg], 3)
-        
+
         # Add positional info
         mesh2 = get_mesh(batch_size, feats.shape[2], feats.shape[3])
         feats = torch.cat([feats, mesh2], 1)
-        
+
         x = self.up1(feats, x4)
         x = self.up2(x, x3)
         x = self.outc(x)
@@ -115,15 +115,18 @@ def criterion(prediction, mask, regr, size_average=True):
     # mask_loss = mask * (1 - pred_mask)**2 * torch.log(pred_mask + 1e-12) + (1 - mask) * pred_mask**2 * torch.log(1 - pred_mask + 1e-12)
     mask_loss = mask * torch.log(pred_mask + 1e-12) + (1 - mask) * torch.log(1 - pred_mask + 1e-12)
     mask_loss = -mask_loss.mean(0).sum()
-    
+
+    alpha = 0.001
+    mask_loss = mask_loss * alpha
+
     # Regression L1 loss
     pred_regr = prediction[:, 1:]
     regr_loss = (torch.abs(pred_regr - regr).sum(1) * mask).sum(1).sum(1) / mask.sum(1).sum(1)
     regr_loss = regr_loss.mean(0)
-    
+
     # Sum
     loss = mask_loss + regr_loss
     if not size_average:
         loss *= prediction.shape[0]
-    return loss
+    return loss, mask_loss, regr_loss
 
