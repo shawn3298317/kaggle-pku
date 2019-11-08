@@ -47,25 +47,29 @@ class double_conv(nn.Module):
         return x
 
 class up(nn.Module):
+    """
+        Class that performs upsampling
+    """
     def __init__(self, in_ch, x_in_ch, out_ch, bilinear=False):
-        # if bilinear is false then the machine learns the conv transpose
+        """
+            Define the upsampling and conv layers, inspired by Unet
+            Params :
+                in_ch : int
+                    Number of input depth channels for the conv layer
+                out_ch : int
+                    Number of output depth channels for conv layer
+                x_in_ch : int
+                    Number of input and output depth channels for the upsampling transpose convolutions layer
+                bilinear : bool
+                    False : use transpose convolutions
+                    True : use bilinear intrapolation
+        """
         super(up, self).__init__()
-        # here we are not calling any functions, we are only declaring
-
-        #  would be a nice idea if the upsampling could be learned too,
-        #  but my machine do not have enough memory to handle all those weights
-        # print(" self shape from up ",self.shape1)
 
         if bilinear:
-            # keeps the same input output shape
-            # just increases width
+            # keeps the same input output shape, just increases width and height
             self.up = nn.Upsample(scale_factor=2, mode='bilinear', align_corners=True)
         else:
-            # why is the number of input chanels in//2 instead of using the full input?
-            # also we want to copy the output to have half the shape of the input
-            # self.up = nn.ConvTranspose2d(in_ch//2, in_ch//2, 2, stride=2)
-            #self.shape()
-
             self.up=nn.ConvTranspose2d(x_in_ch, x_in_ch, 2, stride=2)
 
         # could use both a bilinear first, then use a learnt upsampling
@@ -73,17 +77,18 @@ class up(nn.Module):
         self.conv = double_conv(in_ch, out_ch)
 
     def forward(self, x1, x2=None):
-        # this is what we have to trace
-        # in our case this is feats
+        """
+            Params :
+                x1 : numpy array of shape (batch_size,chanels,width,height)
+                    Feature Map produced by a CNN
+                x2 : numpy array of shape (batch_size,chanels,width,height)
+                    Feature Map produced by a CNN
+            Returns :
+                x : numpy array of shape (batch_size,chanels,width,height)
+                    Performs upsampling using x1, conncats x1 and x2 and convolves it
+        """
         x1 = self.up(x1)
-        
-        # self.shape1=x1.shape
-        # print("x1.shape",x1.shape)
-        # print("self.shape1",self.shape1)
-
         # input is CHW
-        # x2 is x4
-
         diffY = x2.size()[2] - x1.size()[2]
         diffX = x2.size()[3] - x1.size()[3]
 
@@ -106,7 +111,6 @@ class MyUNet(nn.Module):
     def __init__(self, n_classes):
         super(MyUNet, self).__init__()
         self.base_model = EfficientNet.from_pretrained('efficientnet-b0')
-        # output of efficient net 7,7,1280
         
         # double conv uses a 3x3 kernel with padding =1, stride =1 
 
@@ -121,10 +125,9 @@ class MyUNet(nn.Module):
         # kernel size = stride = 2
         self.mp = nn.MaxPool2d(2)
         
-        # why is the input chanels 1282 + 1024 ?
         # self.up1 = up(1282 + 1024, 512)
         self.up1 = up(1282 + 1024, 1282, 512)
-        # I dont know what this layer is - upsampling + conv ?
+
         # self.up2 = up(512 + 512, 256)
         self.up2 = up(512 + 512, 512 , 256)
         # Why no softmax ? and how do they infer the class from this ?
@@ -141,14 +144,14 @@ class MyUNet(nn.Module):
         
         x_center = x[:, :, :, IMG_WIDTH // MODEL_SCALE: -IMG_WIDTH // MODEL_SCALE]
         feats = self.base_model.extract_features(x_center)
-        print("feats original shape",feats.shape)
+        # print("feats original shape",feats.shape)
         bg = torch.zeros([feats.shape[0], feats.shape[1], feats.shape[2], feats.shape[3] // MODEL_SCALE]).to(device)
-        print("bg shape", bg.shape)
+        # print("bg shape", bg.shape)
         feats = torch.cat([bg, feats, bg], 3)
-        print("Feats after first concat shape bg, feats, bg",feats.shape)
+        # print("Feats after first concat shape bg, feats, bg",feats.shape)
         # Add positional info
         mesh2 = get_mesh(batch_size, feats.shape[2], feats.shape[3])
-        print("Mesh shape",mesh2.shape)
+        # print("Mesh shape",mesh2.shape)
         feats = torch.cat([feats, mesh2], 1)
         # print("Feats shape",feats.shape)
         # print(" X4 shape ",x4.shape)

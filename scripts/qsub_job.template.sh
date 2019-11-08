@@ -25,15 +25,15 @@
 
 # Actual commands
 # load required modules
-module load python3/3.6.5
-module load tensorflow/1.13.1
-module load gcc/5.5.0
-module load cuda/9.2
-module load pytorch/1.0
-module load fftw/3.3.4
-module load tiff/4.0.6
-module load openjpeg/2.1.2
-module load imagemagick/7.0.3-5
+# module load python3/3.6.5
+# module load tensorflow/1.13.1
+# module load gcc/5.5.0
+# module load cuda/9.2
+# module load pytorch/1.0
+# module load fftw/3.3.4
+# module load tiff/4.0.6
+# module load openjpeg/2.1.2
+# module load imagemagick/7.0.3-5
 
 # experiment commands to run
-python train_model.py
+python3 train_model.py
