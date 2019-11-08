@@ -78,6 +78,8 @@ class up(nn.Module):
         x1 = self.up(x1)
         
         self.shape1=x1.shape
+        print("x1.shape",x1.shape)
+        print("self.shape1",self.shape1)
 
         # input is CHW
         # x2 is x4
