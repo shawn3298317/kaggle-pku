@@ -125,8 +125,8 @@ class MyUNet(nn.Module):
         # self.up1 = up(1282 + 1024, 512)
         self.up1 = up( 1282, 512)
         # I dont know what this layer is - upsampling + conv ?
-        self.up2 = up(512 + 512, 256)
-
+        # self.up2 = up(512 + 512, 256)
+        self.up2 = up(512 , 256)
         # Why no softmax ? and how do they infer the class from this ?
         self.outc = nn.Conv2d(256, n_classes, 1)
 
