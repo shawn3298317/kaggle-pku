@@ -66,7 +66,7 @@ class up(nn.Module):
             # self.up = nn.ConvTranspose2d(in_ch//2, in_ch//2, 2, stride=2)
             #self.shape()
 
-            self.up=nn.ConvTranspose2d(self.shape1[1], self.shape1[1], 2, stride=2)
+            self.up=nn.ConvTranspose2d(in_ch, in_ch, 2, stride=2)
 
         # could use both a bilinear first, then use a learnt upsampling
         # https://medium.com/activating-robotic-minds/up-sampling-with-transposed-convolution-9ae4f2df52d0
