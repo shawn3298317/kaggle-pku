@@ -47,7 +47,7 @@ class double_conv(nn.Module):
         return x
 
 class up(nn.Module):
-    def __init__(self, in_ch, out_ch, bilinear=False):
+    def __init__(self, in_ch, x_in_ch, out_ch, bilinear=False):
         # if bilinear is false then the machine learns the conv transpose
         super(up, self).__init__()
         # here we are not calling any functions, we are only declaring
@@ -66,7 +66,7 @@ class up(nn.Module):
             # self.up = nn.ConvTranspose2d(in_ch//2, in_ch//2, 2, stride=2)
             #self.shape()
 
-            self.up=nn.ConvTranspose2d(in_ch, in_ch, 2, stride=2)
+            self.up=nn.ConvTranspose2d(x_in_ch, x_in_ch, 2, stride=2)
 
         # could use both a bilinear first, then use a learnt upsampling
         # https://medium.com/activating-robotic-minds/up-sampling-with-transposed-convolution-9ae4f2df52d0
@@ -123,10 +123,10 @@ class MyUNet(nn.Module):
         
         # why is the input chanels 1282 + 1024 ?
         # self.up1 = up(1282 + 1024, 512)
-        self.up1 = up( 1282, 512)
+        self.up1 = up(1282 + 1024, 1282, 512)
         # I dont know what this layer is - upsampling + conv ?
         # self.up2 = up(512 + 512, 256)
-        self.up2 = up(512 , 256)
+        self.up2 = up(512 + 512, 512 , 256)
         # Why no softmax ? and how do they infer the class from this ?
         self.outc = nn.Conv2d(256, n_classes, 1)
 
