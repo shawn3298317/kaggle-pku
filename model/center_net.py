@@ -47,7 +47,7 @@ class double_conv(nn.Module):
         return x
 
 class up(nn.Module):
-    def __init__(self, in_ch, out_ch, bilinear=True):
+    def __init__(self, in_ch, out_ch, bilinear=False):
         # if bilinear is false then the machine learns the conv transpose
         super(up, self).__init__()
         # here we are not calling any functions, we are only declaring
@@ -62,7 +62,7 @@ class up(nn.Module):
             # why is the number of input chanels in//2 instead of using the full input?
             # also we want to copy the output to have half the shape of the input
             # self.up = nn.ConvTranspose2d(in_ch//2, in_ch//2, 2, stride=2)
-            self.up=nn.ConvTranspose2d(in_ch, in_ch, 3, stride=1,padding=1)
+            self.up=nn.ConvTranspose2d(in_ch, in_ch, 2, stride=2)
 
         # could use both a bilinear first, then use a learnt upsampling
         # https://medium.com/activating-robotic-minds/up-sampling-with-transposed-convolution-9ae4f2df52d0
