@@ -116,16 +116,14 @@ def criterion(prediction, mask, regr, size_average=True):
     mask_loss = mask * torch.log(pred_mask + 1e-12) + (1 - mask) * torch.log(1 - pred_mask + 1e-12)
     mask_loss = -mask_loss.mean(0).sum()
 
-    alpha = 0.5
-    mask_loss = mask_loss * alpha
-
     # Regression L1 loss
     pred_regr = prediction[:, 1:]
     regr_loss = (torch.abs(pred_regr - regr).sum(1) * mask).sum(1).sum(1) / mask.sum(1).sum(1)
     regr_loss = regr_loss.mean(0)
 
     # Sum
-    loss = mask_loss + regr_loss
+    alpha = 0.05
+    loss = alpha * mask_loss + (1 - alpha) * regr_loss
     if not size_average:
         loss *= prediction.shape[0]
     return loss, mask_loss, regr_loss

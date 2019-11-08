@@ -1,6 +1,7 @@
-__pycache__
 *.pyc
-.ipynb_checkpoints/
 *.txt
 *.pth
 predictions.csv
+run/
+__pycache__/
+.ipynb_checkpoints/
