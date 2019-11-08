@@ -54,7 +54,7 @@ class up(nn.Module):
 
         #  would be a nice idea if the upsampling could be learned too,
         #  but my machine do not have enough memory to handle all those weights
-        print(" self shape from up ",self.shape1)
+        # print(" self shape from up ",self.shape1)
 
         if bilinear:
             # keeps the same input output shape
