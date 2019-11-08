@@ -209,7 +209,7 @@ def _regr_back(regr_dict):
 
 def preprocess_image(img, flip=False):
     # guassian blur the image
-    img = cv2.GaussianBlur(gray,(3,3),0)
+    img = cv2.GaussianBlur(img,(3,3),0)
     # lets see if this works
     img = img[img.shape[0] // 2:]
     bg = np.ones_like(img) * img.mean(1, keepdims=True).astype(img.dtype)
