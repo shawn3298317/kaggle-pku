@@ -47,14 +47,14 @@ class double_conv(nn.Module):
         return x
 
 class up(nn.Module):
-    def __init__(self, in_ch, out_ch, bilinear=True):
+    def __init__(self, in_ch, out_ch, bilinear=False):
         # if bilinear is false then the machine learns the conv transpose
         super(up, self).__init__()
         # here we are not calling any functions, we are only declaring
 
         #  would be a nice idea if the upsampling could be learned too,
         #  but my machine do not have enough memory to handle all those weights
-        print("self shape from up",self.shape)
+        print(" self shape from up ",self.shape1)
 
         if bilinear:
             # keeps the same input output shape
@@ -65,7 +65,8 @@ class up(nn.Module):
             # also we want to copy the output to have half the shape of the input
             # self.up = nn.ConvTranspose2d(in_ch//2, in_ch//2, 2, stride=2)
             #self.shape()
-            self.up=nn.ConvTranspose2d(in_ch, in_ch, 2, stride=2)
+
+            self.up=nn.ConvTranspose2d(self.shape1[1], self.shape1[1], 2, stride=2)
 
         # could use both a bilinear first, then use a learnt upsampling
         # https://medium.com/activating-robotic-minds/up-sampling-with-transposed-convolution-9ae4f2df52d0
@@ -76,8 +77,11 @@ class up(nn.Module):
         # in our case this is feats
         x1 = self.up(x1)
         
+        self.shape1=x1.shape
+
         # input is CHW
         # x2 is x4
+
         diffY = x2.size()[2] - x1.size()[2]
         diffX = x2.size()[3] - x1.size()[3]
 
