@@ -42,7 +42,7 @@ n_epochs = 10
 model = MyUNet(8).to(device)
 optimizer = optim.Adam(model.parameters(), lr=0.001)
 # to degrade the learning rate as time progresses
-exp_lr_scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=max(n_epochs, 10) * len(train_loader) // 3, gamma=0.1)
+exp_lr_scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=max(n_epochs, 10) * len(train_loader) // 3, gamma=0.9)
 
 def train_model(epoch, history=None):
     model.train()
@@ -66,8 +66,7 @@ def train_model(epoch, history=None):
         exp_lr_scheduler.step()
 
         current_lr = optimizer.state_dict()['param_groups'][0]['lr']
-        print("Train Epoch: %i, batch: %i, LR: %.6f, Loss: %.6f, MaskLoss: %.6f, RegrLoss: %.6f" %\
-                (epoch, batch_idx+1, current_lr, loss.data, mask_loss.data, regr_loss.data))
+        print("Train Epoch: %i, batch: %i, LR: %.6f, Loss: %.6f, MaskLoss: %.6f, RegrLoss: %.6f" % (epoch, batch_idx+1, current_lr, loss.data, mask_loss.data, regr_loss.data))
 
 def evaluate_model(epoch, history=None):
     model.eval()

@@ -10,7 +10,7 @@
 # Set when qsub system emails you
 #$ -m beas
 
-# Specify hard time limit for the job. 
+# Specify hard time limit for the job.
 #$ -l h_rt=24:00:00
 
 # Where to stream std out
@@ -19,9 +19,12 @@
 # Where to stream std err
 #$ -e log/qsub.err.txt
 
+# CPU resources
+#$ -pe omp 4
+
 # GPU resources
-#$ -l gpus=1
-#$ -l gpu_memory=16G
+#$ -l gpus=0.25
+#$ -l gpu_memory=12G
 
 # Actual commands
 # load required modules
