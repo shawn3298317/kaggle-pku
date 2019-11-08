@@ -47,19 +47,24 @@ class double_conv(nn.Module):
         return x
 
 class up(nn.Module):
-    def __init__(self, in_ch, out_ch, bilinear=True):
+    def __init__(self, in_ch, out_ch, bilinear=False):
         # if bilinear is false then the machine learns the conv transpose
         super(up, self).__init__()
 
         #  would be a nice idea if the upsampling could be learned too,
         #  but my machine do not have enough memory to handle all those weights
         if bilinear:
+            # keeps the same input output shape
+            # just increases width
             self.up = nn.Upsample(scale_factor=2, mode='bilinear', align_corners=True)
         else:
             # why is the number of input chanels in//2 instead of using the full input?
-            self.up = nn.ConvTranspose2d(in_ch//2, in_ch//2, 2, stride=2)
+            # also we want to copy the output to have half the shape of the input
+            # self.up = nn.ConvTranspose2d(in_ch//2, in_ch//2, 2, stride=2)
+            self.up=nn.ConvTranspose2d(in_ch, in_ch, 3, stride=1,padding=1)
 
-        # Why is a conv layer being added here ?
+        # could use both a bilinear first, then use a learnt upsampling
+        # https://medium.com/activating-robotic-minds/up-sampling-with-transposed-convolution-9ae4f2df52d0
         self.conv = double_conv(in_ch, out_ch)
 
     def forward(self, x1, x2=None):
@@ -121,9 +126,9 @@ class MyUNet(nn.Module):
         x3 = self.mp(self.conv2(x2))
         x4 = self.mp(self.conv3(x3))
         
-        x_center = x[:, :, :, IMG_WIDTH // 8: -IMG_WIDTH // 8]
+        x_center = x[:, :, :, IMG_WIDTH // MODEL_SCALE: -IMG_WIDTH // MODEL_SCALE]
         feats = self.base_model.extract_features(x_center)
-        bg = torch.zeros([feats.shape[0], feats.shape[1], feats.shape[2], feats.shape[3] // 8]).to(device)
+        bg = torch.zeros([feats.shape[0], feats.shape[1], feats.shape[2], feats.shape[3] // MODEL_SCALE]).to(device)
         feats = torch.cat([bg, feats, bg], 3)
         
         # Add positional info

@@ -44,7 +44,7 @@ gc.collect()
 n_epochs = 15
 
 model = MyUNet(8).to(device)
-print("Model is", model)
+# print("Model is", model)
 summary(model, (3,480,1536))
 optimizer = optim.Adam(model.parameters(), lr=0.001)
 # to degrade the learning rate as time progresses
