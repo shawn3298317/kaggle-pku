@@ -47,7 +47,7 @@ class double_conv(nn.Module):
         return x
 
 class up(nn.Module):
-    def __init__(self, in_ch, out_ch, bilinear=False):
+    def __init__(self, in_ch, out_ch, bilinear=True):
         # if bilinear is false then the machine learns the conv transpose
         super(up, self).__init__()
 
@@ -128,13 +128,19 @@ class MyUNet(nn.Module):
         
         x_center = x[:, :, :, IMG_WIDTH // MODEL_SCALE: -IMG_WIDTH // MODEL_SCALE]
         feats = self.base_model.extract_features(x_center)
+        print("feats original shape",feats.shape)
         bg = torch.zeros([feats.shape[0], feats.shape[1], feats.shape[2], feats.shape[3] // MODEL_SCALE]).to(device)
+        print("bg shape", bg.shape)
         feats = torch.cat([bg, feats, bg], 3)
-        
+        print("Feats after first concat shape bg, feats, bg",feats.shape)
         # Add positional info
         mesh2 = get_mesh(batch_size, feats.shape[2], feats.shape[3])
+        print("Mesh shape",mesh2.shape)
         feats = torch.cat([feats, mesh2], 1)
-        
+        print("Feats shape",feats)
+        print(" X4 shape ",x4.shape)
+        print(" x_center shape",x_center.shape)
+
         x = self.up1(feats, x4)
         x = self.up2(x, x3)
         x = self.outc(x)
