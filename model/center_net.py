@@ -47,13 +47,15 @@ class double_conv(nn.Module):
         return x
 
 class up(nn.Module):
-    def __init__(self, in_ch, out_ch, bilinear=False):
+    def __init__(self, in_ch, out_ch, bilinear=True):
         # if bilinear is false then the machine learns the conv transpose
         super(up, self).__init__()
         # here we are not calling any functions, we are only declaring
 
         #  would be a nice idea if the upsampling could be learned too,
         #  but my machine do not have enough memory to handle all those weights
+        print("self shape from up",self.shape)
+
         if bilinear:
             # keeps the same input output shape
             # just increases width
@@ -62,6 +64,7 @@ class up(nn.Module):
             # why is the number of input chanels in//2 instead of using the full input?
             # also we want to copy the output to have half the shape of the input
             # self.up = nn.ConvTranspose2d(in_ch//2, in_ch//2, 2, stride=2)
+            #self.shape()
             self.up=nn.ConvTranspose2d(in_ch, in_ch, 2, stride=2)
 
         # could use both a bilinear first, then use a learnt upsampling
@@ -70,9 +73,11 @@ class up(nn.Module):
 
     def forward(self, x1, x2=None):
         # this is what we have to trace
+        # in our case this is feats
         x1 = self.up(x1)
         
         # input is CHW
+        # x2 is x4
         diffY = x2.size()[2] - x1.size()[2]
         diffX = x2.size()[3] - x1.size()[3]
 
@@ -139,9 +144,9 @@ class MyUNet(nn.Module):
         mesh2 = get_mesh(batch_size, feats.shape[2], feats.shape[3])
         print("Mesh shape",mesh2.shape)
         feats = torch.cat([feats, mesh2], 1)
-        print("Feats shape",feats.shape)
-        print(" X4 shape ",x4.shape)
-        print(" x_center shape",x_center.shape)
+        # print("Feats shape",feats.shape)
+        # print(" X4 shape ",x4.shape)
+        # print(" x_center shape",x_center.shape)
 
         x = self.up1(feats, x4)
         x = self.up2(x, x3)
