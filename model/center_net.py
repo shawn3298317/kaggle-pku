@@ -50,6 +50,7 @@ class up(nn.Module):
     def __init__(self, in_ch, out_ch, bilinear=True):
         # if bilinear is false then the machine learns the conv transpose
         super(up, self).__init__()
+        # here we are not calling any functions, we are only declaring
 
         #  would be a nice idea if the upsampling could be learned too,
         #  but my machine do not have enough memory to handle all those weights
@@ -68,6 +69,7 @@ class up(nn.Module):
         self.conv = double_conv(in_ch, out_ch)
 
     def forward(self, x1, x2=None):
+        # this is what we have to trace
         x1 = self.up(x1)
         
         # input is CHW
@@ -137,7 +139,7 @@ class MyUNet(nn.Module):
         mesh2 = get_mesh(batch_size, feats.shape[2], feats.shape[3])
         print("Mesh shape",mesh2.shape)
         feats = torch.cat([feats, mesh2], 1)
-        print("Feats shape",feats)
+        print("Feats shape",feats.shape)
         print(" X4 shape ",x4.shape)
         print(" x_center shape",x_center.shape)
 
