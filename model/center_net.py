@@ -3,7 +3,6 @@ import numpy as np
 import torch
 from torch import nn
 import torch.nn.functional as F
-import pdb
 
 IMG_WIDTH = 2048 - 512
 IMG_HEIGHT = IMG_WIDTH // 16 * 5
@@ -90,7 +89,7 @@ class MyUNet(nn.Module):
         batch_size = x.shape[0]
         mesh1 = get_mesh(batch_size, x.shape[2], x.shape[3])
         x0 = torch.cat([x, mesh1], 1)
-        pdb.set_trace()
+
         x1 = self.mp(self.conv0(x0))
         x2 = self.mp(self.conv1(x1))
         x3 = self.mp(self.conv2(x2))
