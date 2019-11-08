@@ -77,9 +77,9 @@ class up(nn.Module):
         # in our case this is feats
         x1 = self.up(x1)
         
-        self.shape1=x1.shape
-        print("x1.shape",x1.shape)
-        print("self.shape1",self.shape1)
+        # self.shape1=x1.shape
+        # print("x1.shape",x1.shape)
+        # print("self.shape1",self.shape1)
 
         # input is CHW
         # x2 is x4
@@ -122,8 +122,8 @@ class MyUNet(nn.Module):
         self.mp = nn.MaxPool2d(2)
         
         # why is the input chanels 1282 + 1024 ?
-        self.up1 = up(1282 + 1024, 512)
-
+        # self.up1 = up(1282 + 1024, 512)
+        self.up1 = up( 1282, 512)
         # I dont know what this layer is - upsampling + conv ?
         self.up2 = up(512 + 512, 256)
 
