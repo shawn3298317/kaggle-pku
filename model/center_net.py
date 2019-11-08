@@ -21,7 +21,7 @@ def get_mesh(batch_size, shape_x, shape_y):
         shape_y : ?
             Shape of y
     Returns :
-        
+
     '''
     mg_x, mg_y = np.meshgrid(np.linspace(0, 1, shape_y), np.linspace(0, 1, shape_x))
     mg_x = np.tile(mg_x[None, None, :, :], [batch_size, 1, 1, 1]).astype('float32')
@@ -47,7 +47,7 @@ class double_conv(nn.Module):
         return x
 
 class up(nn.Module):
-    def __init__(self, in_ch, out_ch, bilinear=False):
+    def __init__(self, in_ch, out_ch, bilinear=True):
         # if bilinear is false then the machine learns the conv transpose
         super(up, self).__init__()
 
@@ -88,6 +88,7 @@ class MyUNet(nn.Module):
     def __init__(self, n_classes):
         super(MyUNet, self).__init__()
         self.base_model = EfficientNet.from_pretrained('efficientnet-b0')
+        # output of efficient net 7,7,1280
         
         # double conv uses a 3x3 kernel with padding =1, stride =1 
 

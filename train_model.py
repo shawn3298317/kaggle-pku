@@ -6,6 +6,7 @@ from torch.utils.data import DataLoader
 from tqdm import tqdm
 from sklearn.model_selection import train_test_split
 from efficientnet_pytorch import EfficientNet
+from torchsummary import summary
 
 import constants
 from model.center_net import MyUNet,criterion
@@ -26,7 +27,7 @@ dev_dataset = CarDataset(df_dev, train_images_dir, training=False)
 test_dataset = CarDataset(df_test, test_images_dir, training=False)
 
 # batch size is limited by GPU memory
-BATCH_SIZE = 4
+BATCH_SIZE = 1
 # loads data
 # num_workers specifies the number of CPU cores that load data
 train_loader = DataLoader(dataset=train_dataset, batch_size=BATCH_SIZE, shuffle=True, num_workers=4)
@@ -36,10 +37,15 @@ test_loader = DataLoader(dataset=test_dataset, batch_size=BATCH_SIZE, shuffle=Fa
 # Gets the GPU if there is one, otherwise the cpu
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(device)
+torch.cuda.empty_cache()
+gc.collect()
 
+# learn.destroy() 
 n_epochs = 15
 
 model = MyUNet(8).to(device)
+print("Model is", model)
+summary(model, (3,480,1536))
 optimizer = optim.Adam(model.parameters(), lr=0.001)
 # to degrade the learning rate as time progresses
 exp_lr_scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=max(n_epochs, 10) * len(train_loader) // 3, gamma=0.1)
@@ -51,7 +57,9 @@ def train_model(epoch, history=None):
         img_batch = img_batch.to(device)
         mask_batch = mask_batch.to(device)
         regr_batch = regr_batch.to(device)
-        
+        # print("Image batch shape is ",img_batch.shape)
+        # print("Mask batch shape is ",mask_batch.shape)
+        # print("regr batch shape is ",regr_batch.shape)
         optimizer.zero_grad()
         output = model(img_batch)
         loss = criterion(output, mask_batch, regr_batch)
