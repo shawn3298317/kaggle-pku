@@ -135,7 +135,9 @@ class MyUNet(nn.Module):
 
     def forward(self, x):
         batch_size = x.shape[0]
+        print("Input shape to Unet", x.shape)
         mesh1 = get_mesh(batch_size, x.shape[2], x.shape[3])
+        print("mesh1 shape",mesh1.shape)
         x0 = torch.cat([x, mesh1], 1)
         x1 = self.mp(self.conv0(x0))
         x2 = self.mp(self.conv1(x1))
@@ -143,6 +145,7 @@ class MyUNet(nn.Module):
         x4 = self.mp(self.conv3(x3))
         
         x_center = x[:, :, :, IMG_WIDTH // MODEL_SCALE: -IMG_WIDTH // MODEL_SCALE]
+        print("\n Input shape to Efficient Net B0",x_center.shape)
         feats = self.base_model.extract_features(x_center)
         # print("feats original shape",feats.shape)
         bg = torch.zeros([feats.shape[0], feats.shape[1], feats.shape[2], feats.shape[3] // MODEL_SCALE]).to(device)

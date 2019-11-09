@@ -40,13 +40,14 @@ print(device)
 torch.cuda.empty_cache()
 gc.collect()
 
-# learn.destroy() 
 n_epochs = 15
 
 model = MyUNet(8).to(device)
-# print("Model is", model)
-summary(model, (3,480,1536))
+# Uncomment to get a summary of the model
+#summary(model, (3,480,1536))
+
 optimizer = optim.Adam(model.parameters(), lr=0.001)
+
 # to degrade the learning rate as time progresses
 exp_lr_scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=max(n_epochs, 10) * len(train_loader) // 3, gamma=0.1)
 
@@ -57,9 +58,9 @@ def train_model(epoch, history=None):
         img_batch = img_batch.to(device)
         mask_batch = mask_batch.to(device)
         regr_batch = regr_batch.to(device)
-        # print("Image batch shape is ",img_batch.shape)
-        # print("Mask batch shape is ",mask_batch.shape)
-        # print("regr batch shape is ",regr_batch.shape)
+        print("Input Image batch shape is ",img_batch.shape)
+        print("Input Mask batch shape is ",mask_batch.shape)
+        print("Input regr batch shape is ",regr_batch.shape)
         optimizer.zero_grad()
         output = model(img_batch)
         loss = criterion(output, mask_batch, regr_batch)

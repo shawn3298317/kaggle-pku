@@ -32,12 +32,13 @@ class CarDataset(Dataset):
         # Read image
         img0 = imread(img_name, True)
         img = preprocess_image(img0, flip=flip)
+        
         img = np.rollaxis(img, 2, 0)
         
         # Get mask and regression maps
         #print("img_name: {}, labels = {}".format(img_name, labels))
         # doubt -> shouldnt flip be equal to the flip and not false ?
-        mask, regr = get_mask_and_regr(img0, labels, flip=flip)
+        mask, regr = get_mask_and_regr(img0, labels, flip=False)
         regr = np.rollaxis(regr, 2, 0)
         
         return [img, mask, regr]

@@ -29,6 +29,8 @@ train_loader = DataLoader(dataset=train_dataset, batch_size=BATCH_SIZE, shuffle=
 dev_loader = DataLoader(dataset=dev_dataset, batch_size=BATCH_SIZE, shuffle=False, num_workers=4)
 test_loader = DataLoader(dataset=test_dataset, batch_size=BATCH_SIZE, shuffle=False, num_workers=4)
 
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+print(device)
 model = MyUNet(8).to(device)
 
 img, mask, regr = dev_dataset[0]
