@@ -7,6 +7,11 @@ Model -
 * Conv upsampling
 * accuracy - 0.086
 
+* Flip=false in car_dataset get_mask_and_regr
+* Conv upsampling
+* accuracy - 0.052
+
+
 Model architecture -
 ![](/images/kaggle_pku_architecture.jpg)
 
@@ -22,8 +27,7 @@ Explicit hyperparameters -
 7. Dataset Augmentation
 
 Tasks -
-1. Determining model shapes is different from understanding it
-2. Determine if flip should be present or not.
+1. Do the saving best model thing 
 
 Notes -
 1. Why are we predicting pitch as pitch sine and pitch cosine ?

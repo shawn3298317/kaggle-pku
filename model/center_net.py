@@ -130,8 +130,11 @@ class MyUNet(nn.Module):
 
         # self.up2 = up(512 + 512, 256)
         self.up2 = up(512 + 512, 512 , 256)
-        # Why no softmax ? and how do they infer the class from this ?
-        self.outc = nn.Conv2d(256, n_classes, 1)
+
+        self.up3=up(128+256,256,128)
+
+        # self.outc = nn.Conv2d(256, n_classes, 1)
+        self.outc = nn.Conv2d(128, n_classes, 1)
 
     def forward(self, x):
         batch_size = x.shape[0]
@@ -162,6 +165,8 @@ class MyUNet(nn.Module):
 
         x = self.up1(feats, x4)
         x = self.up2(x, x3)
+        x = self.up3(x, x2)
+        x = self.mp(x)
         x = self.outc(x)
         return x
 

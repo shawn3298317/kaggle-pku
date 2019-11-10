@@ -38,7 +38,7 @@ class CarDataset(Dataset):
         img = np.rollaxis(img, 2, 0)
 
         # doubt -> shouldnt flip be equal to the flip and not false ?
-        mask, regr = get_mask_and_regr(img0, labels, flip=False)
+        mask, regr = get_mask_and_regr(img0, labels, flip=flip)
         # convert to channel, height, width format
         regr = np.rollaxis(regr, 2, 0)
         
