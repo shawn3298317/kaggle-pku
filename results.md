@@ -1,10 +1,11 @@
 ## The results so far 
 
 Baseline - Need to implement IoU score
-
+ 
 Model -
 * Flip=flip in car_dataset get_mask_and_regr
 * Conv upsampling
+* accuracy - 0.086
 
 Model architecture -
 ![](/images/kaggle_pku_architecture.jpg)

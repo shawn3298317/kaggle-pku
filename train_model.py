@@ -27,7 +27,7 @@ dev_dataset = CarDataset(df_dev, train_images_dir, training=False)
 test_dataset = CarDataset(df_test, test_images_dir, training=False)
 
 # batch size is limited by GPU memory
-BATCH_SIZE = 1
+BATCH_SIZE = 4
 # loads data
 # num_workers specifies the number of CPU cores that load data
 train_loader = DataLoader(dataset=train_dataset, batch_size=BATCH_SIZE, shuffle=True, num_workers=4)
