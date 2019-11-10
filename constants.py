@@ -1,7 +1,7 @@
 import numpy as np
 
-PATH = "../basement-scientists/pku-auto-drive/"
-#PATH = "/projectnb/cs542/basement-scientists/pku-auto-drive/"
+# PATH = "../basement-scientists/pku-auto-drive/"
+PATH = "/projectnb/cs542/basement-scientists/pku-auto-drive/"
 CAMERA_MATRIX = np.array([[2304.5479, 0,  1686.2379],
                           [0, 2305.8757, 1354.9849],
                           [0, 0, 1]], dtype=np.float32)
