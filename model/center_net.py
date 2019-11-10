@@ -133,8 +133,8 @@ class MyUNet(nn.Module):
 
         self.up3=up(128+256,256,128)
 
-        # self.outc = nn.Conv2d(256, n_classes, 1)
-        self.outc = nn.Conv2d(128, n_classes, 1)
+        self.outc = nn.Conv2d(256, n_classes, 1)
+        # self.outc = nn.Conv2d(128, n_classes, 1)
 
     def forward(self, x):
         batch_size = x.shape[0]
@@ -146,9 +146,10 @@ class MyUNet(nn.Module):
         x2 = self.mp(self.conv1(x1))
         x3 = self.mp(self.conv2(x2))
         x4 = self.mp(self.conv3(x3))
-        
+        print("Done woth all the mynet layer")
+        print()
         x_center = x[:, :, :, IMG_WIDTH // MODEL_SCALE: -IMG_WIDTH // MODEL_SCALE]
-        print("\n Input shape to Efficient Net B0",x_center.shape)
+        # print("\n Input shape to Efficient Net B0",x_center.shape)
         feats = self.base_model.extract_features(x_center)
         # print("feats original shape",feats.shape)
         bg = torch.zeros([feats.shape[0], feats.shape[1], feats.shape[2], feats.shape[3] // MODEL_SCALE]).to(device)
@@ -165,8 +166,10 @@ class MyUNet(nn.Module):
 
         x = self.up1(feats, x4)
         x = self.up2(x, x3)
-        x = self.up3(x, x2)
-        x = self.mp(x)
+        print("entering experimental phase")
+        # x = self.up3(x, x2)
+        # x = self.mp(x)
+        print("Sucess")
         x = self.outc(x)
         return x
 
