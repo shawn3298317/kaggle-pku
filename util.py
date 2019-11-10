@@ -213,7 +213,7 @@ def preprocess_image(img, flip=False):
     bg = np.ones_like(img) * img.mean(1, keepdims=True).astype(img.dtype)
     bg = bg[:, :img.shape[1] // 6]
     img = np.concatenate([bg, img, bg], 1)
-    img = cv2.resize(img, (IMG_WIDTH, IMG_HEIGHT))
+    img = cv2.resize(img, (constants.IMG_WIDTH, constants.IMG_HEIGHT))
     if flip:
         img = img[:,::-1]
     # guassian blur the image
