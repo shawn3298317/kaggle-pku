@@ -21,6 +21,7 @@ class CarDataset(Dataset):
             idx = idx.tolist()
         
         # Get image name
+        # to get entries row wise
         idx, labels = self.df.values[idx]
         img_name = self.root_dir.format(idx)
         
@@ -33,12 +34,12 @@ class CarDataset(Dataset):
         img0 = imread(img_name, True)
         img = preprocess_image(img0, flip=flip)
         
+        # convert to channel, height, width format
         img = np.rollaxis(img, 2, 0)
-        
-        # Get mask and regression maps
-        #print("img_name: {}, labels = {}".format(img_name, labels))
+
         # doubt -> shouldnt flip be equal to the flip and not false ?
         mask, regr = get_mask_and_regr(img0, labels, flip=False)
+        # convert to channel, height, width format
         regr = np.rollaxis(regr, 2, 0)
         
         return [img, mask, regr]

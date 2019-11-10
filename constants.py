@@ -8,8 +8,8 @@ CAMERA_MATRIX = np.array([[2304.5479, 0,  1686.2379],
 
 # Image Shape While proceesing
 # 3,480,1536
-IMG_WIDTH = 2048 - 512
-IMG_HEIGHT = IMG_WIDTH // 16 * 5
+IMG_WIDTH = 2048 - 512 #1536
+IMG_HEIGHT = IMG_WIDTH // 16 * 5 #480
 MODEL_SCALE = 8
 # Original Image shape
 IMG_SHAPE = (2710, 3384, 3)

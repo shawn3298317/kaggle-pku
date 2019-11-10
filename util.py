@@ -208,16 +208,16 @@ def _regr_back(regr_dict):
     return regr_dict
 
 def preprocess_image(img, flip=False):
-    # guassian blur the image
-    img = cv2.GaussianBlur(img,(3,3),0)
     # lets see if this works
     img = img[img.shape[0] // 2:]
     bg = np.ones_like(img) * img.mean(1, keepdims=True).astype(img.dtype)
     bg = bg[:, :img.shape[1] // 6]
     img = np.concatenate([bg, img, bg], 1)
-    img = cv2.resize(img, (constants.IMG_WIDTH, constants.IMG_HEIGHT))
+    img = cv2.resize(img, (IMG_WIDTH, IMG_HEIGHT))
     if flip:
         img = img[:,::-1]
+    # guassian blur the image
+    img = cv2.GaussianBlur(img,(3,3),0)
     return (img / 255).astype('float32')
 
 def get_mask_and_regr(img, labels, flip=False):
