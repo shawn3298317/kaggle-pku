@@ -5,7 +5,8 @@ To run the code -
 1. If you are training locally ```Do pyhton train_model.py ```
 2. If you are using the SSC cluster do - 
     * First navigate to the appropriate directory using ```cd /projectnb/cs542```
-    * Then do ```cd {username}```
+    * Then do ```cd {username}/kaggle-pku```
+    * Then do `module load python3`
     * Then submit the job ```qsub scripts/qsub_job.template.sh```
     * To check the status on SCC server do ```qstat -u {username}```
 
