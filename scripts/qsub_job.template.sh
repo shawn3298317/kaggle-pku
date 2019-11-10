@@ -19,6 +19,9 @@
 # Where to stream std err
 #$ -e log/qsub.err.txt
 
+# CPU resources
+#$ -pe omp 4
+
 # GPU resources
 #$ -l gpus=1
 #$ -l gpu_memory=16G
