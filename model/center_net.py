@@ -122,7 +122,7 @@ def criterion(prediction, mask, regr, size_average=True):
     regr_loss = regr_loss.mean(0)
 
     # Sum
-    alpha = 0.05
+    alpha = 0.03
     loss = alpha * mask_loss + (1 - alpha) * regr_loss
     if not size_average:
         loss *= prediction.shape[0]

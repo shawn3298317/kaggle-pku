@@ -129,7 +129,7 @@ if __name__ == "__main__":
         train_model(epoch, history, summary_writer)
         evaluate_model(epoch, history, summary_writer)
 
-    torch.save(model.state_dict(), './ckpt/model.pth')
+    torch.save(model.state_dict(), './ckpt/model_20191111.pth')
 
     logdir = os.path.join('./tb_', datetime.now().strftime('%Y-%m-%d_%H-%M-%S'))
     if not os.path.exists(logdir):
