@@ -12,6 +12,7 @@ import constants
 from model.center_net import MyUNet,criterion
 from car_dataset import CarDataset
 
+
 train = pd.read_csv(constants.PATH + '/train.csv')
 test = pd.read_csv(constants.PATH + '/sample_submission.csv')
 train_images_dir = constants.PATH + 'train_images/{}.jpg'
