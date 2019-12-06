@@ -1,5 +1,4 @@
-
-m efficientnet_pytorch import EfficientNet
+from efficientnet_pytorch import EfficientNet
 import numpy as np
 import torch
 from torch import nn
