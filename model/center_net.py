@@ -1,4 +1,5 @@
-from efficientnet_pytorch import EfficientNet
+
+m efficientnet_pytorch import EfficientNet
 import numpy as np
 import torch
 from torch import nn
@@ -11,6 +12,12 @@ MODEL_SCALE = 8
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 def get_mesh(batch_size, shape_x, shape_y):
+    '''
+    Params :
+        batch_size : Integer
+            Represents batch size of the data
+    Returns :
+    '''
     mg_x, mg_y = np.meshgrid(np.linspace(0, 1, shape_y), np.linspace(0, 1, shape_x))
     mg_x = np.tile(mg_x[None, None, :, :], [batch_size, 1, 1, 1]).astype('float32')
     mg_y = np.tile(mg_y[None, None, :, :], [batch_size, 1, 1, 1]).astype('float32')
@@ -35,16 +42,31 @@ class double_conv(nn.Module):
         return x
 
 class up(nn.Module):
-    def __init__(self, in_ch, out_ch, bilinear=True):
+    """
+        Class that performs upsampling
+    """
+    def __init__(self, in_ch, x_in_ch, out_ch, bilinear=False):
+        """
+            Define the upsampling and conv layers, inspired by Unet
+            Params :
+                in_ch : int
+                    Number of input depth channels for the conv layer
+                out_ch : int
+                    Number of output depth channels for conv layer
+                x_in_ch : int
+                    Number of input and output depth channels for the upsampling transpose convolutions layer
+                bilinear : bool
+                    False : use transpose convolutions
+                    True : use bilinear intrapolation
+        """
         super(up, self).__init__()
-
-        #  would be a nice idea if the upsampling could be learned too,
-        #  but my machine do not have enough memory to handle all those weights
         if bilinear:
+            # keeps the same input output shape, just increases width and height
             self.up = nn.Upsample(scale_factor=2, mode='bilinear', align_corners=True)
         else:
-            self.up = nn.ConvTranspose2d(in_ch//2, in_ch//2, 2, stride=2)
-
+            self.up=nn.ConvTranspose2d(x_in_ch, x_in_ch, 2, stride=2)
+        # could use both a bilinear first, then use a learnt upsampling
+        # https://medium.com/activating-robotic-minds/up-sampling-with-transposed-convolution-9ae4f2df52d0
         self.conv = double_conv(in_ch, out_ch)
 
     def forward(self, x1, x2=None):
@@ -79,11 +101,12 @@ class MyUNet(nn.Module):
         self.conv2 = double_conv(128, 512)
         self.conv3 = double_conv(512, 1024)
 
+         # kernel size = stride = 2
         self.mp = nn.MaxPool2d(2)
-
-        self.up1 = up(1282 + 1024, 512)
-        self.up2 = up(512 + 512, 256)
-        self.outc = nn.Conv2d(256, n_classes, 1)
+        self.up1 = up(1282 + 1024, 1282, 512)
+        self.up2 = up(512 + 512, 512 , 256)
+        self.up3=up(128+256,256,128)
+        self.outc = nn.Conv2d(128, n_classes, 1)
 
     def forward(self, x):
         batch_size = x.shape[0]
@@ -127,4 +150,5 @@ def criterion(prediction, mask, regr, size_average=True):
     if not size_average:
         loss *= prediction.shape[0]
     return loss, mask_loss, regr_loss
+
 
