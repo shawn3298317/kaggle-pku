@@ -5,12 +5,17 @@ Baseline - Need to implement IoU score
 Model -
 * Flip=flip in car_dataset get_mask_and_regr
 * Conv upsampling
-* accuracy - 0.086
+* accuracy - 0.086  
+* Dev loss - ~34
 
 * Flip=false in car_dataset get_mask_and_regr
 * Conv upsampling
 * accuracy - 0.052
 
+* One more U link
+* Flip = flip
+* Conv upsampling
+* Dev loss - 30.14
 
 Model architecture -
 ![](/images/kaggle_pku_architecture.jpg)
@@ -27,7 +32,10 @@ Explicit hyperparameters -
 7. Dataset Augmentation
 
 Tasks -
-1. Do the saving best model thing 
+0. Add other U link
+1. Add some non linearity in the reconstruction part like Relu
+2. Take inspiration from the actual U net model
+3. Do the saving best model thing 
 
 Notes -
 1. Why are we predicting pitch as pitch sine and pitch cosine ?

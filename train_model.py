@@ -40,6 +40,9 @@ print(device)
 torch.cuda.empty_cache()
 gc.collect()
 
+#  device_ids = list(map(lambda x: _get_device_index(x, True), device_ids))
+# net = torch.nn.DataParallel(model, device_ids=device_ids)
+
 n_epochs = 15
 
 model = MyUNet(8).to(device)
