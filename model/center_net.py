@@ -104,7 +104,7 @@ class MyUNet(nn.Module):
         self.mp = nn.MaxPool2d(2)
         self.up1 = up(1282 + 1024, 1282, 512)
         self.up2 = up(512 + 512, 512 , 256)
-        self.up3=up(128+256,256,128)
+        # self.up3=up(128+256,256,128)
         self.outc = nn.Conv2d(128, n_classes, 1)
 
     def forward(self, x):
