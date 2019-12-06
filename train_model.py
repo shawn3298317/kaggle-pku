@@ -39,7 +39,7 @@ test_loader = DataLoader(dataset=test_dataset, batch_size=BATCH_SIZE, shuffle=Fa
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(device)
 
-n_epochs = 10
+n_epochs = 20
 
 model = MyUNet(8).to(device)
 optimizer = optim.Adam(model.parameters(), lr=0.001)
@@ -130,7 +130,11 @@ if __name__ == "__main__":
         train_model(epoch, history, summary_writer)
         evaluate_model(epoch, history, summary_writer)
 
-    torch.save(model.state_dict(), './ckpt/model_20191111.pth')
+        if epoch % 3 == 0 and epoch != 0:
+            torch.save(model.state_dict(), './ckpt/model_ep_%i.pth' % epoch)
+
+    # Save final model
+    torch.save(model.state_dict(), './ckpt/model.pth')
 
     logdir = os.path.join('./tb_', datetime.now().strftime('%Y-%m-%d_%H-%M-%S'))
     if not os.path.exists(logdir):

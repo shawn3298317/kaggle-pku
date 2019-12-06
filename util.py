@@ -93,7 +93,7 @@ def visualize(img, coords):
     x_l = 1.02
     y_l = 0.80
     z_l = 2.31
-    
+
     img = img.copy()
     for point in coords:
         # Get values
@@ -118,7 +118,7 @@ def visualize(img, coords):
         # Drawing
         img = draw_line(img, img_cor_points)
         img = draw_points(img, img_cor_points[-1:])
-    
+
     return img
 
 def rotate(x, angle):
@@ -145,7 +145,7 @@ def optimize_xy(r, c, x0, y0, z0):
         y = (y + IMG_SHAPE[1] // 6) * IMG_WIDTH / (IMG_SHAPE[1] *4/3) / MODEL_SCALE
         y = np.round(y).astype('int')
         return (x-r)**2 + (y-c)**2
-    
+
     res = minimize(distance_fn, [x0, y0, z0], method='Powell')
     x_new, y_new, z_new = res.x
     return x_new, y_new, z0
@@ -176,7 +176,7 @@ def extract_coords(prediction):
     coords = clear_duplicates(coords)
     return coords
 
-def coords2str(coords, names=['yaw', 'pitch', 'roll', 'x', 'y', 'z', 'confidence']):
+def coords2str(coords, threshold=0.5, names=['yaw', 'pitch', 'roll', 'x', 'y', 'z', 'confidence']):
     s = []
     for c in coords:
         for n in names:
@@ -201,7 +201,7 @@ def _regr_back(regr_dict):
     for name in ['x', 'y', 'z']:
         regr_dict[name] = regr_dict[name] * 100
     regr_dict['roll'] = rotate(regr_dict['roll'], -np.pi)
-    
+
     pitch_sin = regr_dict['pitch_sin'] / np.sqrt(regr_dict['pitch_sin']**2 + regr_dict['pitch_cos']**2)
     pitch_cos = regr_dict['pitch_cos'] / np.sqrt(regr_dict['pitch_sin']**2 + regr_dict['pitch_cos']**2)
     regr_dict['pitch'] = np.arccos(pitch_cos) * np.sign(pitch_sin)
